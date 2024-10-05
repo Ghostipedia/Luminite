@@ -109,7 +109,7 @@ void main() {
 	vec4 shadowClipPos = shadowProjection * vec4(shadowViewPos, 1.0);
 	
 	vec3 shadow = getSoftShadow(shadowClipPos);
-	vec3 sunlight = sunlightColor * dot(normal, worldLightVector) * shadow;	
+	vec3 sunlight = sunlightColor * clamp(dot(normal, worldLightVector),0.0,1.0) * shadow;	
 	color = texture(colortex0, texcoord);
 	if(depth == 1.0){
  	 return;
