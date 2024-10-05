@@ -50,8 +50,8 @@ vec3 getShadow(vec3 shadowScreenPos){
   return shadowColor.rgb * (1.0 - shadowColor.a);
 }
 vec4 getNoise(vec2 coord){
-  ivec2 screenCoord = ivec2(coord * vec2(viewWidth, viewHeight)); // exact pixel coordinate onscreen
-  ivec2 noiseCoord = screenCoord % 64; // wrap to range of noiseTextureResolution
+  ivec2 screenCoord = ivec2(coord * vec2(viewWidth, viewHeight)); 
+  ivec2 noiseCoord = screenCoord % 64; 
   return texelFetch(noisetex, noiseCoord, 0);
 }
 
@@ -72,7 +72,7 @@ vec3 getSoftShadow(vec4 shadowClipPos){
     for (float y = -range; y <= range; y+= increment){
       vec2 offset = rotation * vec2(x, y) / shadowMapResolution;
       vec4 offsetShadowClipPos = shadowClipPos + vec4(offset, 0.0, 0.0);
-      offsetShadowClipPos.z -= 0.001; // apply bias
+      offsetShadowClipPos.z -= 0.001; //needed otherwise stuff will flip out
       offsetShadowClipPos.xyz = distortShadowClipPos(offsetShadowClipPos.xyz);
       vec3 shadowNDCPos = offsetShadowClipPos.xyz / offsetShadowClipPos.w;
       vec3 shadowScreenPos = shadowNDCPos * 0.5 + 0.5;
