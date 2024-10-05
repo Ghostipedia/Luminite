@@ -5,7 +5,7 @@ uniform sampler2D colortex1;
 uniform sampler2D colortex2;
 uniform vec3 shadowLightPosition;
 uniform mat4 gbufferModelViewInverse;
-
+uniform sampler2D depthtex0;
 in vec2 texcoord;
 
 
@@ -20,6 +20,8 @@ const vec3 ambientColor = vec3(0.1);
 
 
 void main() {
+	float depth = texture(depthtex0, texcoord).r;
+
 	
 	vec3 lightVector = normalize(shadowLightPosition);
 	vec3 worldLightVector = mat3(gbufferModelViewInverse) * lightVector;
@@ -31,8 +33,13 @@ void main() {
 	vec3 blocklight = lightmap.r * torchColor;
 	vec3 skylight = lightmap.g * skyColor;
 	vec3 ambient = ambientColor;
+	
 	vec3 sunlight = sunlightColor * clamp(dot(worldLightVector, normal), 0.0, 1.0) * lightmap.g;	
 	color = texture(colortex0, texcoord);
+	if(depth == 1.0){
+ 	 return;
+	}
 	color.rgb *= blocklight + skylight + ambient + sunlight;
+	
 
 }
