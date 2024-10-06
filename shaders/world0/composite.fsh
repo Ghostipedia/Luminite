@@ -44,7 +44,7 @@ vec3 dawnColor = clamp(mix(vec3(0.929,0.49,0.0),vec3(0,0,0),sunRiseFactor),0.0,3
 vec3 sunlightColor1 = mix(vec3(0.0,0.0,0.0),dayLightColor.rgb,dayNightScaleFactor);
 vec3 sunlightColor2 = mix(nightlightColor.rgb,vec3(0.0,0.0,0.0),dayNightScaleFactor);
 // vec3 sunlightColor = dawnColor.rgb;
-vec3 sunlightColor = mix(sunlightColor1.rgb, sunlightColor2.rgb, 0.7) ;
+vec3 sunlightColor = mix(sunlightColor1.rgb, sunlightColor2.rgb, normalizedTime);
 // const vec3 sunlightColor = vec3(0.941,0.69,0.137);
 
 
