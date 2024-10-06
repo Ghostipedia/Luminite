@@ -10,6 +10,7 @@ uniform sampler2D shadowtex0;
 uniform sampler2D shadowtex1;
 uniform sampler2D shadowcolor0;
 uniform sampler2D noisetex;
+uniform int worldTime;
 
 uniform float viewHeight;
 uniform float viewWidth;
@@ -23,10 +24,31 @@ in vec2 texcoord;
 /* DRAWBUFFERS: 0 */
 layout(location = 0) out vec4 color;
 
+//Sunrise - 23215
+//Sunset - 12785
+
+float normalizedTime = float(worldTime) / 24000;
+vec3 nightlightColor = vec3(0.173,0.718,0.859);
+vec3 dayLightColor = vec3(1,0.906,0.663);
+float timeFactor = sin(normalizedTime * 2.0 * 3.14159);
+float dayNightScaleFactor = (timeFactor + 1.0) / 2.0;
+
+vec3 mixTimeColor =mix(nightlightColor,dayLightColor,dayNightScaleFactor);
+
+vec3 dawnDuskColor = vec3(0.929,0.49,0.0);
+
+
+//This handles the day color and night color, but does not blend in colors for sunrise/set
+vec3 sunlightColor1 = mix(nightlightColor.rgb,dayLightColor.rgb,mixTimeColor).rgb;
+vec3 sunlightColor2 = mix(sunlightColor1.rgb, dawnDuskColor.rgb,timeFactor).rgb;
+vec3 sunlightColor = nightlightColor.rgb ;
+// const vec3 sunlightColor = vec3(0.941,0.69,0.137);
+
+
+
 
 const vec3 torchColor = vec3(1.0, 0.5, 0.08);
 const vec3 skyColor = vec3(0.05, 0.15, 0.3);
-const vec3 sunlightColor = vec3(1.0);
 const vec3 ambientColor = vec3(0.1);
 
 vec3 projectAndDivide(mat4 projectionMatrix, vec3 position){
@@ -109,7 +131,7 @@ void main() {
 	vec4 shadowClipPos = shadowProjection * vec4(shadowViewPos, 1.0);
 	
 	vec3 shadow = getSoftShadow(shadowClipPos);
-	vec3 sunlight = sunlightColor * clamp(dot(normal, worldLightVector),0.0,1.0) * shadow;	
+	vec3 sunlight = sunlightColor.rgb * clamp(dot(normal, worldLightVector),0.0,1.0) * shadow;	
 	color = texture(colortex0, texcoord);
 	if(depth == 1.0){
  	 return;
