@@ -33,15 +33,18 @@ vec3 dayLightColor = vec3(1,0.906,0.663);
 float timeFactor = sin(normalizedTime * 2.0 * 3.14159);
 float dayNightScaleFactor = (timeFactor + 1.0) / 2.0;
 
-vec3 mixTimeColor =mix(nightlightColor,dayLightColor,dayNightScaleFactor);
 
-vec3 dawnDuskColor = vec3(0.929,0.49,0.0);
+float sunRiseFactor = 23215/worldTime;
+
+
+vec3 dawnColor = clamp(mix(vec3(0.929,0.49,0.0),vec3(0,0,0),sunRiseFactor),0.0,3.0);
 
 
 //This handles the day color and night color, but does not blend in colors for sunrise/set
-vec3 sunlightColor1 = mix(nightlightColor.rgb,dayLightColor.rgb,mixTimeColor).rgb;
-vec3 sunlightColor2 = mix(sunlightColor1.rgb, dawnDuskColor.rgb,timeFactor).rgb;
-vec3 sunlightColor = nightlightColor.rgb ;
+vec3 sunlightColor1 = mix(vec3(0.0,0.0,0.0),dayLightColor.rgb,dayNightScaleFactor);
+vec3 sunlightColor2 = mix(nightlightColor.rgb,vec3(0.0,0.0,0.0),dayNightScaleFactor);
+// vec3 sunlightColor = dawnColor.rgb;
+vec3 sunlightColor = mix(sunlightColor1.rgb, sunlightColor2.rgb, 0.7) ;
 // const vec3 sunlightColor = vec3(0.941,0.69,0.137);
 
 
@@ -131,7 +134,7 @@ void main() {
 	vec4 shadowClipPos = shadowProjection * vec4(shadowViewPos, 1.0);
 	
 	vec3 shadow = getSoftShadow(shadowClipPos);
-	vec3 sunlight = sunlightColor.rgb * clamp(dot(normal, worldLightVector),0.0,1.0) * shadow;	
+	vec3 sunlight = sunlightColor * clamp(dot(normal, worldLightVector),0.0,1.0) * shadow;	
 	color = texture(colortex0, texcoord);
 	if(depth == 1.0){
  	 return;
